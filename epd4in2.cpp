@@ -111,6 +111,42 @@ int Epd::Init_4Gray(void) {
 	SendData(0x97);
 }
 
+int Epd::Init_fastRefresh(void) {
+    /* this calls the peripheral hardware interface, see epdif */
+   
+if (IfInit() != 0) {
+        return -1;
+    }
+    /* EPD hardware init start */
+
+
+    Reset();
+    SendCommand(POWER_SETTING);
+    SendData(0x03);                  // VDS_EN, VDG_EN
+    SendData(0x00);                  // VCOM_HV, VGHL_LV[1], VGHL_LV[0]
+    SendData(0x2b);                  // VDH
+    SendData(0x2b);                  // VDL
+    SendData(0xff);                  // VDHR
+    SendCommand(BOOSTER_SOFT_START);
+    SendData(0x17);
+    SendData(0x17);
+    SendData(0x17);                  //07 0f 17 1f 27 2F 37 2f
+    SendCommand(POWER_ON);
+    WaitUntilIdle();
+    SendCommand(PANEL_SETTING);
+   // SendData(0xbf);    // KW-BF   KWR-AF  BWROTP 0f
+  //  SendData(0x0b);
+//	SendData(0x0F);  //300x400 Red mode, LUT from OTP
+//	SendData(0x1F);  //300x400 B/W mode, LUT from OTP
+	SendData(0x3F); //300x400 B/W mode, LUT set by register
+//	SendData(0x2F); //300x400 Red mode, LUT set by register
+
+    SendCommand(PLL_CONTROL);
+    SendData(0x3C);        // 3A 100Hz   29 150Hz   39 200Hz    31 171Hz       3C 50Hz (default)    0B 10Hz
+	//SendData(0x0B);   //0B is 10Hz
+    /* EPD hardware init end */
+    return 0;
+}
 
 
 
@@ -182,7 +218,7 @@ void Epd::Reset(void) {
 /**
  *  @brief: transmit partial data to the SRAM
  */
-void Epd::SetPartialWindow(const unsigned char* buffer_black, int x, int y, int w, int l) {
+void Epd::SetPartialWindow(const unsigned char* buffer_black, int x, int y, int w, int l, int dtm) {
     SendCommand(PARTIAL_IN);
     SendCommand(PARTIAL_WINDOW);
     SendData(x >> 8);
@@ -195,7 +231,17 @@ void Epd::SetPartialWindow(const unsigned char* buffer_black, int x, int y, int 
     SendData((y + l - 1) & 0xff);
     SendData(0x01);         // Gates scan both inside and outside of the partial window. (default) 
     DelayMs(2);
-    SendCommand(DATA_START_TRANSMISSION_2);
+    /*SendCommand(DATA_START_TRANSMISSION_2);
+    if (buffer_black != NULL) {
+        for(int i = 0; i < w  / 8 * l; i++) {
+            SendData(buffer_black[i]);  
+        }  
+    } else {
+        for(int i = 0; i < w  / 8 * l; i++) {
+            SendData(0x00);  
+        }  
+    }*/
+    SendCommand((dtm == 1) ? DATA_START_TRANSMISSION_1 : DATA_START_TRANSMISSION_2);
     if (buffer_black != NULL) {
         for(int i = 0; i < w  / 8 * l; i++) {
             SendData(buffer_black[i]);  
@@ -380,6 +426,39 @@ void Epd::set4Gray_lut(void)
 			{SendData(EPD_4IN2_4Gray_lut_ww[count]);}
 	}	         
 }
+
+/**
+ *  @brief: set the look-up table for quick display (partial refresh)
+ */
+
+void Epd::SetLutQuick(void) {
+    unsigned int count;     
+    SendCommand(LUT_FOR_VCOM);                            //vcom
+    for(count = 0; count < 44; count++) {
+        SendData(lut_vcom0_quick[count]);
+    }
+    
+    SendCommand(LUT_WHITE_TO_WHITE);                      //ww --
+    for(count = 0; count < 42; count++) {
+        SendData(lut_ww_quick[count]);
+    }   
+    
+    SendCommand(LUT_BLACK_TO_WHITE);                      //bw r
+    for(count = 0; count < 42; count++) {
+        SendData(lut_bw_quick[count]);
+    } 
+
+    SendCommand(LUT_WHITE_TO_BLACK);                      //wb w
+    for(count = 0; count < 42; count++) {
+        SendData(lut_wb_quick[count]);
+    } 
+
+    SendCommand(LUT_BLACK_TO_BLACK);                      //bb b
+    for(count = 0; count < 42; count++) {
+        SendData(lut_bb_quick[count]);
+    } 
+}
+
 /**
  * @brief: refresh and displays the frame
  */
@@ -452,6 +531,13 @@ void Epd::DisplayFrame(void) {
     SendCommand(DISPLAY_REFRESH); 
     DelayMs(100);
     WaitUntilIdle();
+}
+
+void Epd::DisplayFrameQuick(void) {
+    SetLutQuick();
+    SendCommand(DISPLAY_REFRESH); 
+  //  DelayMs(100);
+  //  WaitUntilIdle();
 }
 
 /**
@@ -589,5 +675,57 @@ const unsigned char EPD_4IN2_4Gray_lut_bb[] ={
 0x00	,0x00	,0x00	,0x00	,0x00	,0x00,
 };
 
+/*********************Quick LUT***********************/
+
+const unsigned char lut_vcom0_quick[] =
+{
+0x00, 0x0E, 0x00, 0x00, 0x00, 0x01,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,        
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_ww_quick[] ={
+0xA0, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const unsigned char lut_bw_quick[] ={
+0xA0, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     
+};
+
+const unsigned char lut_bb_quick[] ={
+0x50, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     
+};
+
+const unsigned char lut_wb_quick[] ={
+0x50, 0x0E, 0x00, 0x00, 0x00, 0x01,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0x00, 0x00, 0x00,         
+};
 
 /* END OF FILE */
