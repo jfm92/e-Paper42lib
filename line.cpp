@@ -126,8 +126,13 @@ void line::save_figure(epdframe &frame){
             y=y2;
             xe=x1;
         }
-        frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8)); // Save to the buffer each point
-
+        if(this->color==BLACK){
+            frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8)); // Save to the buffer each point
+        }
+        else{
+            frame.frame_buffer[(x + y * frame.scr_width) / 8] |= 0x80 >> (x % 8); // Save to the buffer each point
+        }
+        
         for(i=0;x<xe;i++){
             x=x+1;
             if(px<0){
@@ -142,7 +147,12 @@ void line::save_figure(epdframe &frame){
                 }
                 px=px+2*(dy1-dx1);
             }
-            frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8));
+            if(this->color==BLACK){
+                frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8)); // Save to the buffer each point
+            }
+            else{
+                frame.frame_buffer[(x + y * frame.scr_width) / 8] |= 0x80 >> (x % 8); // Save to the buffer each point
+            }
         }
     }
     else{
@@ -156,7 +166,12 @@ void line::save_figure(epdframe &frame){
             y=y2;
             ye=y1;
         }
-        frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8));
+        if(this->color==BLACK){
+            frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8)); // Save to the buffer each point
+        }
+        else{
+            frame.frame_buffer[(x + y * frame.scr_width) / 8] |= 0x80 >> (x % 8); // Save to the buffer each point
+        }
         for(i=0;y<ye;i++){
             y=y+1;
             if(py<=0){
@@ -171,7 +186,12 @@ void line::save_figure(epdframe &frame){
                 }
                 py=py+2*(dx1-dy1);
             }
-            frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8));
+            if(this->color==BLACK){
+                frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8)); // Save to the buffer each point
+            }
+            else{
+                frame.frame_buffer[(x + y * frame.scr_width) / 8] |= 0x80 >> (x % 8); // Save to the buffer each point
+            }
         }
     }
 
@@ -185,17 +205,9 @@ void line::save_figure(epdframe &frame){
  * */
 
 void line::delete_figure(epdframe &frame){
-    // Change to the new 
-    if(this->color == BLACK && frame.background_color == WHITE){
-        for (int i = this->x_pos; i < this->x_pos + this->line_width; i++) {
-            frame.frame_buffer[(i + this->y_pos * frame.scr_width) / 8] |= 0x80 >> (i % 8);
-        }
-    }
-    else if(this->color == WHITE && frame.background_color == BLACK){
-        for (int i = this->x_pos; i < this->x_pos + this->line_width; i++) {
-            frame.frame_buffer[(i + this->y_pos * frame.scr_width) / 8] &= ~(0x80 >> (i % 8));
-        }
-    }
+    this->color=!this->color; // We change the color to the opposite
+    this->save_figure(frame); // Repaint the figure on the opposite color.
+    this->color=!this->color; // Set to the original color, if we want to repaint on the future.
 }
 
 /**
