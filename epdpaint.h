@@ -37,6 +37,7 @@
 #define IF_INVERT_COLOR     1
 
 #include "fonts.h"
+#include <Arduino.h>
 
 class Paint {
 public:
@@ -67,6 +68,7 @@ private:
     int width;
     int height;
     int rotate;
+    
 };
 
 #endif

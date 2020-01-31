@@ -31,6 +31,7 @@
 #endif
 #include "epdpaint.h"
 
+
 Paint::Paint(unsigned char* image, int width, int height) {
     this->rotate = ROTATE_0;
     this->image = image;
@@ -63,6 +64,7 @@ void Paint::DrawAbsolutePixel(int x, int y, int colored) {
     }
     if (IF_INVERT_COLOR) {
         if (colored) {
+           // Serial.println("Pixel absolute colored");
             image[(x + y * this->width) / 8] |= 0x80 >> (x % 8);
         } else {
             image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));

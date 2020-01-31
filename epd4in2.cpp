@@ -109,6 +109,8 @@ int Epd::Init_4Gray(void) {
 
 	SendCommand(0X50);			//VCOM AND DATA INTERVAL SETTING			
 	SendData(0x97);
+
+    return 0;
 }
 
 int Epd::Init_fastRefresh(void) {
@@ -142,7 +144,7 @@ if (IfInit() != 0) {
 //	SendData(0x2F); //300x400 Red mode, LUT set by register
 
     SendCommand(PLL_CONTROL);
-    SendData(0x3C);        // 3A 100Hz   29 150Hz   39 200Hz    31 171Hz       3C 50Hz (default)    0B 10Hz
+    SendData(0x3A);        // 3A 100Hz   29 150Hz   39 200Hz    31 171Hz       3C 50Hz (default)    0B 10Hz
 	//SendData(0x0B);   //0B is 10Hz
     /* EPD hardware init end */
     return 0;
