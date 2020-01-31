@@ -17,6 +17,7 @@ class epdframe{
         void clear_screen();
         void wipe_buffer();
         friend class line;
+        friend class circle;
 
     private:
 
@@ -54,5 +55,34 @@ class line{
         uint16_t y_pos;
         uint16_t degree;
         uint16_t line_width;
-        uint16_t color;
+        uint8_t color;
+};
+
+/**
+ * @brief Class to store the data of the circle figure.
+ * */
+
+class circle{
+    public:
+        circle(uint16_t x_pos, uint16_t y_pos, uint16_t circle_radius, uint8_t color, bool filled);
+        ~circle();
+        void save_figure(epdframe &frame);
+        void delete_figure(epdframe &frame);
+        uint16_t get_x_pos();
+        uint16_t get_y_pos();
+        uint16_t get_radius();
+        bool get_filled();
+        uint8_t get_color();
+        void change_x_pos(uint16_t x_pos);
+        void change_y_pos(uint16_t y_pos);
+        void change_radius(uint16_t degree);
+        void change_color(uint8_t color);
+        void change_filled(bool filled);
+
+    private:
+        uint16_t x_pos; 
+        uint16_t y_pos;
+        uint16_t radius;
+        uint8_t color;
+        bool filled;
 };
