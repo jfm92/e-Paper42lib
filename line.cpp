@@ -35,7 +35,7 @@ line::~line(){
  * */
     
 void line::save_figure(epdframe &frame){
-    //TODO: Add different color
+    
     int x1=0; // x initial point
     int x2=0; // x final point
     int y1=0; // y initial point
@@ -106,7 +106,7 @@ void line::save_figure(epdframe &frame){
             y2=y1 -(this->line_width*sin((this->degree-270) * PI / 180.0));
         }
     }
-    // Once we've obtain the final point of the line, we need to apply the Bresenhaan to "draw" the line on the buffer 
+    // Once we've obtain the final point of the line, we need to apply the Bresenhaan algorithm to "draw" the line on the buffer 
     
     dx=x2-x1;
     dy=y2-y1;
