@@ -1,5 +1,20 @@
 #include "epdframe.h"
 
+/**
+ * @brief Instantiates a new circle class.
+ * 
+ * @param   x_pos
+ *          Position on the axis X of the line.
+ * @param   y_pos
+ *          Position on the axis Y of the line.
+ * @param   circle_radius
+ *          Radius of the circle.
+ * @param   Color
+ *          Color of the external line of the circle and if it's filled, the inside color. (BLACK or WHITE)
+ * @param   filled
+ *          true to fill the circle, otherwise false.
+ * */
+
 circle::circle(uint16_t x_pos, uint16_t y_pos, uint16_t circle_radius, uint8_t color, bool filled){
     this->x_pos=x_pos;
     this->y_pos=y_pos;
@@ -11,23 +26,44 @@ circle::circle(uint16_t x_pos, uint16_t y_pos, uint16_t circle_radius, uint8_t c
 circle::~circle(){
 
 }
+
 /**
- * @brief
+ * @brief   This will generate the figure and it will save on the buffer.
+ * 
+ * @param   frame 
+ *          Frame class previously initialize.
  * */
+
 void circle::save_figure(epdframe &frame){
-    int x_pos = -this->radius;
-    int y_pos = 0;
-    int err = 2 - 2 * this->radius;
-    int e2;
+    uint16_t x_pos = -this->radius;
+    uint16_t y_pos = 0;
+    uint16_t err = 2 - 2 * this->radius;
+    uint16_t e2;
+
+    // Bresenhaan algorithm to create the circle on the buffer.
 
     do {
         if(this->color==BLACK){
+            // Save the pixel that we want to print.
             frame.frame_buffer[((this->x_pos-x_pos) + (this->y_pos+y_pos) * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos-x_pos) % 8));
             frame.frame_buffer[((this->x_pos+x_pos) + (this->y_pos+y_pos) * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos+x_pos) % 8));
             frame.frame_buffer[((this->x_pos+x_pos) + (this->y_pos-y_pos) * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos+x_pos) % 8));
             frame.frame_buffer[((this->x_pos-x_pos) + (this->y_pos-y_pos) * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos-x_pos) % 8));
             if(this->filled==true){
-                //TODO:Add filled circle
+                // The algorithm performed to fill the circle is to print horizontal lines on each position of the circle.
+                uint16_t i;
+                uint16_t x=this->x_pos + x_pos; //X position of the horizontal line to fill the circle.
+                uint16_t y=this->y_pos + y_pos; //Y position of the horizontal line to fill the circle.
+                uint16_t line_width= 2 *(-x_pos) + 1; // Line width of fill horizontal line.
+
+                for (i = x; i < x + line_width; i++) {
+                    frame.frame_buffer[(i + y * frame.scr_width) / 8] &= ~(0x80 >> (i % 8));
+                }
+
+                y=this->y_pos - y_pos;
+                for (i = x; i < x + line_width; i++) {
+                    frame.frame_buffer[(i + y * frame.scr_width) / 8] &= ~(0x80 >> (i % 8));
+                }
             }
         }
         else{
@@ -36,7 +72,19 @@ void circle::save_figure(epdframe &frame){
             frame.frame_buffer[((this->x_pos+x_pos) + (this->y_pos-y_pos) * frame.scr_width) / 8] |= 0x80 >> ((this->x_pos+x_pos) % 8);
             frame.frame_buffer[((this->x_pos-x_pos) + (this->y_pos-y_pos) * frame.scr_width) / 8] |= 0x80 >> ((this->x_pos-x_pos) % 8);
             if(this->filled==true){
-                //TODO:Add filled circle
+                int i;
+                int x=this->x_pos + x_pos;
+                int y=this->y_pos + y_pos;
+                int line_width= 2 *(-x_pos) + 1;
+
+                for (i = x; i < x + line_width; i++) {
+                    frame.frame_buffer[(i + y * frame.scr_width) / 8] |= 0x80 >> (i % 8);
+                }
+
+                y=this->y_pos - y_pos;
+                for (i = x; i < x + line_width; i++) {
+                    frame.frame_buffer[(i + y * frame.scr_width) / 8] |= 0x80 >> (i % 8);
+                }
             }
         }
         
@@ -52,6 +100,13 @@ void circle::save_figure(epdframe &frame){
         }
     } while (x_pos <= 0);
 }
+
+/**
+ * @brief Delete the circle figure from the buffer
+ * 
+ * @param   frame
+ *          Pre initialize frame class where we want to delete the figure.
+ * */
 
 void circle::delete_figure(epdframe &frame){
     this->color=!this->color; // We change the color to the opposite
