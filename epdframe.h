@@ -18,7 +18,8 @@ class epdframe{
         void wipe_buffer();
         friend class line;
         friend class circle;
-
+        friend class rectangle;
+        
     private:
 
         uint16_t scr_width; // Number of pixels on the Y axis.
@@ -83,6 +84,37 @@ class circle{
         uint16_t x_pos; 
         uint16_t y_pos;
         uint16_t radius;
+        uint8_t color;
+        bool filled;
+};
+
+/**
+ * @brief Class to store the data of the rectangule figure.
+ * */
+
+class rectangle{
+    public:
+        rectangle(uint16_t x_pos, uint16_t y_pos, uint16_t x_length, uint16_t y_length, uint8_t color, bool filled);
+        ~rectangle();
+        void save_figure(epdframe &frame);
+        void delete_figure(epdframe &frame);
+        uint16_t get_x_pos();
+        uint16_t get_y_pos();
+        uint16_t get_x_length();
+        uint16_t get_y_length();
+        uint8_t get_color();
+        bool get_filled();
+        void set_x_pos(uint16_t x_pos);
+        void set_y_pos(uint16_t y_pos);
+        void set_x_length(uint16_t x_length);
+        void set_y_length(uint16_t y_length);
+        void set_color(uint8_t color);
+        void set_filled(bool filled);
+    private:
+        uint16_t x_pos;
+        uint16_t y_pos;
+        uint16_t x_length;
+        uint16_t y_length;
         uint8_t color;
         bool filled;
 };
