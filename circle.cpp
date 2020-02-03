@@ -35,11 +35,11 @@ circle::~circle(){
  * */
 
 void circle::save_figure(epdframe &frame){
-    uint16_t x_pos = -this->radius;
-    uint16_t y_pos = 0;
-    uint16_t err = 2 - 2 * this->radius;
-    uint16_t e2;
-
+    int x_pos = -this->radius;
+    int y_pos = 0;
+    int err = 2 - 2 * this->radius;
+    int e2;
+    printf("saving figure\r\n");
     // Bresenhaan algorithm to create the circle on the buffer.
 
     do {
@@ -52,9 +52,9 @@ void circle::save_figure(epdframe &frame){
             if(this->filled==true){
                 // The algorithm performed to fill the circle is to print horizontal lines on each position of the circle.
                 uint16_t i;
-                uint16_t x=this->x_pos + x_pos; //X position of the horizontal line to fill the circle.
-                uint16_t y=this->y_pos + y_pos; //Y position of the horizontal line to fill the circle.
-                uint16_t line_width= 2 *(-x_pos) + 1; // Line width of fill horizontal line.
+                int x=this->x_pos + x_pos; //X position of the horizontal line to fill the circle.
+                int y=this->y_pos + y_pos; //Y position of the horizontal line to fill the circle.
+                int line_width= 2 *(-x_pos) + 1; // Line width of fill horizontal line.
 
                 for (i = x; i < x + line_width; i++) {
                     frame.frame_buffer[(i + y * frame.scr_width) / 8] &= ~(0x80 >> (i % 8));
