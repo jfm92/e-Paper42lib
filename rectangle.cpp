@@ -1,5 +1,22 @@
 #include "epdframe.h"
 
+/**
+ * @brief Instantiates a new rectangle class.
+ * 
+ * @param   x_pos
+ *          Position on the axis X of the line.
+ * @param   y_pos
+ *          Position on the axis Y of the line.
+ * @param   x_length
+ *          Set the initial length of the rectangle on the X axis.
+ * @param   y_length
+ *          Set the initial length of the rectangle on the X axis.
+ * @param   color
+ *          Color of the perimeter of the rectangle and the filled. (BLACK or WHITE)
+ * @param   filled
+ *          Boolean varible that creates a filled rectangle or not.
+ * */
+
 rectangle::rectangle(uint16_t x_pos, uint16_t y_pos, uint16_t x_length, uint16_t y_length, uint8_t color, bool filled){
     this->x_pos=x_pos;
     this->y_pos=y_pos;
@@ -13,28 +30,61 @@ rectangle::~rectangle(){
 
 }
 
+/**
+ * @brief This function generates the rectangle figure. Depends of the filled and color option, it will create a perimeter of points with
+ * the dimensions required or it will created an area points with the required dimensions.
+ * 
+ * @param   frame 
+ *          Frame class previously initialize.
+ * */
+
 void rectangle::save_figure(epdframe &frame){
     if(!this->filled){
-        //Print the horizontal points.
+        //Print the horizontal points of the rectangle.
         for (int i = this->x_pos; i < this->x_pos + this->x_length; i++) {
-            frame.frame_buffer[(i + this->y_pos * frame.scr_width) / 8] &= ~(0x80 >> (i % 8)); // Save to the buffer each point
-            // Just apply the offset of the Y axis.
-            frame.frame_buffer[(i + (this->y_pos + this->y_length) * frame.scr_width) / 8] &= ~(0x80 >> (i % 8)); 
+            if(this->color==BLACK){
+                frame.frame_buffer[(i + this->y_pos * frame.scr_width) / 8] &= ~(0x80 >> (i % 8)); 
+                // Just apply the offset of the Y axis.
+                frame.frame_buffer[(i + (this->y_pos + this->y_length) * frame.scr_width) / 8] &= ~(0x80 >> (i % 8));
+            }
+            else{
+                frame.frame_buffer[(i + this->y_pos * frame.scr_width) / 8] |= 0x80 >> (i % 8);
+                frame.frame_buffer[(i + (this->y_pos + this->y_length) * frame.scr_width) / 8] |= 0x80 >> (i % 8);
+            }
         }
+        //Print the vertical points of the rectangle
         for (int i = this->y_pos; i < this->y_pos + this->y_length; i++) {
-            frame.frame_buffer[(this->x_pos + i * frame.scr_width) / 8] &= ~(0x80 >> (this->x_pos % 8)); // Save to the buffer each point
-            frame.frame_buffer[((this->x_pos + this->x_length) + i * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos + this->x_length) % 8)); // Save to the buffer each point
+            if(this->color==BLACK){
+                frame.frame_buffer[(this->x_pos + i * frame.scr_width) / 8] &= ~(0x80 >> (this->x_pos % 8)); 
+                frame.frame_buffer[((this->x_pos + this->x_length) + i * frame.scr_width) / 8] &= ~(0x80 >> ((this->x_pos + this->x_length) % 8));
+            }
+            else{
+                frame.frame_buffer[(this->x_pos + i * frame.scr_width) / 8]  |= 0x80 >> (this->x_pos % 8);
+                frame.frame_buffer[((this->x_pos + this->x_length) + i * frame.scr_width) / 8] |= 0x80 >> ((this->x_pos + this->x_length) % 8);
+            } 
         }
     }
     else{
         for (int x = this->x_pos; x < (this->x_pos + this->x_length); x++) {
             for (int y = this->y_pos; y < (this->y_pos + this->y_length); y++) {
-                frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8));
+                if(this->color==BLACK){
+                    frame.frame_buffer[(x + y * frame.scr_width) / 8] &= ~(0x80 >> (x % 8));
+                }
+                else{
+                    frame.frame_buffer[(x + y * frame.scr_width) / 8] |= 0x80 >> (x % 8);
+                }
             }
         }
 
     }
 }
+
+/**
+ * @brief This function deletes from the buffer the figure, by changing the color of the figure to the opposite.
+ * 
+ * @param   frame 
+ *          Frame class previously initialize.
+ * */
 
 void rectangle::delete_figure(epdframe &frame){
     this->color=!this->color; // We change the color to the opposite
