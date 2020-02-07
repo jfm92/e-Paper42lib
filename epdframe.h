@@ -19,6 +19,7 @@ class epdframe{
         friend class line;
         friend class circle;
         friend class rectangle;
+        friend class image;
         
     private:
 
@@ -117,4 +118,29 @@ class rectangle{
         uint16_t y_length;
         uint8_t color;
         bool filled;
+};
+
+/**
+ * @brief Class to store the data of a image
+ * */
+
+class image{
+    public:
+        image(uint16_t x_pos, uint16_t y_pos, const unsigned char *image_buffer, uint16_t img_width, uint16_t image_heigth);
+        ~image();
+        void save_image(epdframe &frame);
+        void delete_image(epdframe &frame);
+        uint16_t get_x_pos();
+        uint16_t get_y_pos();
+        uint16_t get_image_width();
+        uint16_t get_image_heigth();
+        void set_x_pos(uint16_t x_pos);
+        void set_y_pos(uint16_t y_pos);
+
+    private:
+        uint16_t x_pos;
+        uint16_t y_pos;
+        uint16_t image_width;
+        uint16_t image_heigth;
+        const unsigned char *image_buffer;
 };
