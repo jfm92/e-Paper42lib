@@ -1,5 +1,4 @@
 #include "epdframe.h"
-#include "imagedata.h"
 
 image::image(uint16_t x_pos, uint16_t y_pos, const unsigned char *image_buffer, uint16_t img_width, uint16_t img_height){
     this->x_pos = x_pos;
