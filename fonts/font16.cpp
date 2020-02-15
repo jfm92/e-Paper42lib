@@ -36,7 +36,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "fonts.h"
+#include "fonts_index.h"
 #if (defined(__AVR__))
 #include <avr\pgmspace.h>
 #else

@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include "epd4in2.h"
+#include "images/image_index.h"
+#include "fonts/fonts_index.h"
 
 #define BLACK 0
 #define WHITE 1
@@ -20,6 +22,7 @@ class epdframe{
         friend class circle;
         friend class rectangle;
         friend class image;
+        friend class text_box;
         
     private:
 
@@ -143,4 +146,32 @@ class image{
         uint16_t image_width;
         uint16_t image_heigth;
         const unsigned char *image_buffer;
+};
+
+class text_box{
+    public:
+        text_box(uint16_t x_pos, uint16_t y_pos, uint8_t text_font, uint8_t font_size, uint8_t color);
+        ~text_box();
+        void save_text(const char *text,epdframe &frame);
+        void delete_text(epdframe &frame);
+        void apply_change(epdframe &frame);
+        uint16_t get_x_pos();
+        uint16_t get_y_pos();
+        uint8_t get_text_font();
+        uint8_t get_font_size();
+        uint8_t get_color();
+        void set_x_pos(uint16_t x_pos);
+        void set_y_pos(uint16_t y_pos);
+        void set_font(uint8_t text_font, uint8_t font_size, epdframe &frame);
+        void set_color(uint8_t color);
+    private:
+        void select_font();
+        uint16_t x_pos;
+        uint16_t y_pos;
+        uint64_t buffer_size;
+        uint8_t text_font;
+        uint8_t font_size;
+        uint8_t color;
+        const char *text;
+        sFONT* font;
 };
