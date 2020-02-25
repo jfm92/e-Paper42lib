@@ -1,16 +1,16 @@
-# E-Paper display high abstraction library.
+# E-Paper display object oriented library.
 
-This is a library which aims to simplify the graphic creation process for E-Paper display, providing an object oriented solution.
-Thanks to the object oriented approach, each figure printed on the screen can be modified easily just modiying their properties, avoiding to create again from zero.
-On the next list you can see which operations are available for each figure.
+This is a library that aims to simplify the graphic creation process for E-Paper display, providing an object-oriented solution.
+Thanks to the object-oriented approach, each figure printed on the screen can be modified easily just modifying their properties, avoiding creating again from zero.
+On the next list, you can see which operations are available for each figure.
 
-On the other hand, one of the weak point of the e-Paper Display is the slow refresh time. This library includes by default the proper configuration to achieve partial refresh with a maximum refresh speed of 20 mS from white to black, which translate in a **frame rate of up to 3 FPS**, allowing some simple animations.
+On the other hand, one of the weak points of the e-Paper Display is the slow refresh time. This library includes by default the proper configuration to achieve partial refresh with a maximum refresh speed of 20 mS from white to black, which translates in a **frame rate of up to 3 FPS**, allowing some simple animations.
 
 At this moment, this library is only compatible with the **ESP32** and the E-Paper display WFT0420CZ15 which can be found on the next products:
 - [Waveshare E-Paper 4.2](https://www.waveshare.com/wiki/4.2inch_e-Paper_Module)
 - [Pimorini Inky What](https://www.adafruit.com/product/4142)
 
-But this can be ported easily to any E-Paper display with partial refresh and any other microController with enough resources. I'm working into make it easy to port.
+But this can be ported easily to any E-Paper display with partial refresh and any other microController with enough resources. 
 
 ## Basic figures:
 (All the operations can be set at build and run time.)
@@ -37,7 +37,7 @@ But this can be ported easily to any E-Paper display with partial refresh and an
 ## Images:
 
 At this moment the image module can do the next features:
-- Load easily images to screen space.
+- Easy Image loading.
 - Moves freely around the screen.
 - Delete the image and repaint without creating again the image.
 
