@@ -3,6 +3,12 @@
 #include "images/image_index.h"
 #include "fonts/fonts_index.h"
 
+#if (defined(__AVR__))
+#include <avr\pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #define BLACK 0
 #define WHITE 1
 
@@ -30,7 +36,7 @@ class epdframe{
         uint16_t scr_height; // Number of pixels on the X axis.
         uint8_t background_color; // Background color of the screen (Black or white)
         uint32_t buffer_size; // TODO: Implement dinamic buffer calculation.
-        unsigned char frame_buffer[16000]; // Buffer to save the figures.
+        PROGMEM unsigned char frame_buffer[16000]; // Buffer to save the figures.
         Epd epd; // Epaper class object to control the screen.
 };
 
