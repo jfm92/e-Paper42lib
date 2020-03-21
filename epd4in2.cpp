@@ -26,27 +26,26 @@
 
 #include <stdlib.h>
 #include "epd4in2.h"
+#include "epd_hw.h"
 
 Epd::~Epd() {
 };
 
 Epd::Epd() {
-    reset_pin = RST_PIN;
+    /*reset_pin = RST_PIN;
     dc_pin = DC_PIN;
     cs_pin = CS_PIN;
     busy_pin = BUSY_PIN;
     din_pin = DIN_PIN;
-    sck_pin = SCK_PIN;
+    sck_pin = SCK_PIN;*/
     width = EPD_WIDTH;
     height = EPD_HEIGHT;
 };
 
 int Epd::Init_fastRefresh(void) {
     /* this calls the peripheral hardware interface, see epdif */
-   
-    if (IfInit() != 0) {
-        return -1;
-    }
+
+    dev_init();
     /* EPD hardware init start */
 
     Reset();
@@ -77,42 +76,14 @@ int Epd::Init_fastRefresh(void) {
  *  @brief: basic function for sending commands
  */
 void Epd::SendCommand(unsigned char command) {
-  digitalWrite(dc_pin, LOW);
-    digitalWrite(cs_pin, LOW);
-
-    for (int i = 0; i < 8; i++)
-    {
-        if ((command & 0x80) == 0) digitalWrite(din_pin, LOW); 
-        else                    digitalWrite(din_pin, HIGH);
-
-        command <<= 1;
-        digitalWrite(sck_pin, HIGH);
-        digitalWrite(sck_pin, LOW);
-    }
-    
-    //SPI.transfer(data);
-    digitalWrite(cs_pin, HIGH);
+    send_command(command);
 }
 
 /**
  *  @brief: basic function for sending data
  */
 void Epd::SendData(unsigned char data) {
-  digitalWrite(dc_pin, HIGH);
-    digitalWrite(cs_pin, LOW);
-
-    for (int i = 0; i < 8; i++)
-    {
-        if ((data & 0x80) == 0) digitalWrite(din_pin, LOW); 
-        else                    digitalWrite(din_pin, HIGH);
-
-        data <<= 1;
-        digitalWrite(sck_pin, HIGH);
-        digitalWrite(sck_pin, LOW);
-    }
-    
-    //SPI.transfer(data);
-    digitalWrite(cs_pin, HIGH);
+    send_data(data);
 }
 
 /**
@@ -120,8 +91,8 @@ void Epd::SendData(unsigned char data) {
  */
 void Epd::WaitUntilIdle(void) {
 	SendCommand(0x71);
-    while(DigitalRead(busy_pin) == 0) {      //0: busy, 1: idle
-        DelayMs(100);
+    while(dev_busy() == 0) {      //0: busy, 1: idle
+        delay(100);
 		SendCommand(0x71);
     }      
 }
@@ -132,10 +103,7 @@ void Epd::WaitUntilIdle(void) {
  *          see Epd::Sleep();
  */
 void Epd::Reset(void) {
-    DigitalWrite(reset_pin, LOW);
-    DelayMs(200);
-    DigitalWrite(reset_pin, HIGH);
-    DelayMs(200);   
+    reset();  
 }
 
 /**
@@ -153,7 +121,7 @@ void Epd::SetPartialWindow(const unsigned char* buffer_black, int x, int y, int 
     SendData((y + l - 1) >> 8);        
     SendData((y + l - 1) & 0xff);
     SendData(0x01);         // Gates scan both inside and outside of the partial window. (default) 
-    DelayMs(2);
+    delay(2);
     SendCommand((dtm == 1) ? DATA_START_TRANSMISSION_1 : DATA_START_TRANSMISSION_2);
     if (buffer_black != NULL) {
         for(int i = 0; i < w  / 8 * l; i++) {
@@ -164,7 +132,7 @@ void Epd::SetPartialWindow(const unsigned char* buffer_black, int x, int y, int 
             SendData(0x00);  
         }  
     }
-    DelayMs(2);
+    delay(2);
     SendCommand(PARTIAL_OUT);  
 }
 
@@ -242,20 +210,20 @@ void Epd::ClearFrame(void) {
     SendData(height & 0xff);
 
     SendCommand(DATA_START_TRANSMISSION_1);           
-    DelayMs(2);
+    delay(2);
     for(int i = 0; i < width / 8 * height; i++) {
         SendData(0xFF);  
     }  
-    DelayMs(2);
+    delay(2);
     SendCommand(DATA_START_TRANSMISSION_2);           
-    DelayMs(2);
+    delay(2);
     for(int i = 0; i < width / 8 * height; i++) {
         SendData(0xFF);  
     }  
-    DelayMs(2);
+    delay(2);
 	SetLut();
 	SendCommand(DISPLAY_REFRESH); 
-    DelayMs(100);
+    delay(100);
     WaitUntilIdle();
 }
 
@@ -276,7 +244,7 @@ void Epd::Sleep() {
     SendData(0x17);                       //border floating    
     SendCommand(VCM_DC_SETTING);          //VCOM to 0V
     SendCommand(PANEL_SETTING);
-    DelayMs(100);          
+    delay(100);          
 
     SendCommand(POWER_SETTING);           //VG&VS to 0V fast
     SendData(0x00);        
@@ -284,7 +252,7 @@ void Epd::Sleep() {
     SendData(0x00);              
     SendData(0x00);        
     SendData(0x00);
-    DelayMs(100);          
+    delay(100);          
                 
     SendCommand(POWER_OFF);          //power off
     WaitUntilIdle();

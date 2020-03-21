@@ -27,8 +27,6 @@
 #ifndef EPD4IN2_H
 #define EPD4IN2_H
 
-#include "epdif.h"
-
 // Display resolution
 #define EPD_WIDTH       400
 #define EPD_HEIGHT      300
@@ -85,7 +83,7 @@ extern const unsigned char lut_bw_quick[];
 extern const unsigned char lut_bb_quick[];
 extern const unsigned char lut_wb_quick[];
 
-class Epd : EpdIf {
+class Epd {
 public:
     unsigned int width;
     unsigned int height;
