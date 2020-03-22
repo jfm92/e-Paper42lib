@@ -3,7 +3,7 @@
  **/
 
 /**
- * Choose the SPI bus to use and select the pins
+ * SPI bus configuration
  **/
 #define RST_PIN     26
 #define DC_PIN      27
@@ -21,4 +21,13 @@
 
 #define SCR_WIDTH   400
 #define SCR_HEIGHT  300
- 
+
+/**
+ * Fonts selection.
+ * Uncheck the fonts that you want to use.
+ * */
+
+//#define GENERIC 
+//#define FREESANS 
+#define FREESANS_BOLD
+//#define FREEMONO

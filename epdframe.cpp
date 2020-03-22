@@ -4,7 +4,7 @@
 #include <pgmspace.h>
 #endif
 #include "epdframe.h"
-#include <math.h>
+
 
 /**
  * @brief Instantiates a new epdframe. This will save the data of the frame.
