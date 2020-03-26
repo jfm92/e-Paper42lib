@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <stdio.h>
 
-#include "epd4in2.h"
+#include "epd42_logic.h"
 #include "images/image_index.h"
 #include "fonts/fonts_index.h"
 
@@ -41,7 +41,7 @@ class epdframe{
         uint8_t background_color; // Background color of the screen (Black or white)
         uint32_t buffer_size; // TODO: Implement dinamic buffer calculation.
         PROGMEM unsigned char frame_buffer[16000]; // Buffer to save the figures.
-        Epd epd; // Epaper class object to control the screen.
+        epd42 epd42_scr; // Epaper class object to control the screen.
 };
 
 /**

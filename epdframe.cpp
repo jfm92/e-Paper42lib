@@ -35,7 +35,7 @@ epdframe::~epdframe(){
 
 uint8_t epdframe::init_screen(){
     // Init the screen
-    if (this->epd.Init_fastRefresh() != 0) {
+    if (this->epd42_scr.epd_init() != 0) {
         Serial.print("e-Paper init failed");
         this->~epdframe();
         return 0;
@@ -52,10 +52,11 @@ uint8_t epdframe::init_screen(){
  * **/
 
 void epdframe::show(){
-    //This is "trick" to allow partial refresh. Just modify the buffer that we want to send, and set the partial screen the full size of the screen.
-    this->epd.SetPartialWindow(this->frame_buffer,0,0,this->scr_width,this->scr_height,2);
-    this->epd.DisplayFrameQuick();
-    this->epd.WaitUntilIdle();
+    for(int i=0;i<4;i++){
+        this->epd42_scr.save_data(this->frame_buffer);
+        this->epd42_scr.display_frame();
+        this->epd42_scr.dev_idle();
+    }
 }
 
 /**
@@ -77,7 +78,7 @@ void epdframe::wipe_buffer(){
 
 void epdframe::clear_screen(){
     //Execute the clear command of the screen, wiping all the screen.
-    this->epd.ClearFrame();
+    this->epd42_scr.clear_frame();
 }
 
 
