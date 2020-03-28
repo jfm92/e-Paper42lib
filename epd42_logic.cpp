@@ -35,7 +35,7 @@ uint8_t epd42::epd_init(){
 	send_data(0x3F); //300x400 B/W mode, LUT set by register
 
     send_command(PLL_CONTROL);
-    send_data(0x3A);        // 3A 100Hz   29 150Hz   39 200Hz    31 171Hz       3C 50Hz (default)    0B 10Hz
+    send_data(0x31);        // 3A 100Hz   29 150Hz   39 200Hz    31 171Hz       3C 50Hz (default)    0B 10Hz
 
     return 0;
 }
@@ -75,7 +75,7 @@ void epd42::display_frame(){
 void epd42::dev_idle(){
     send_command(0x71);
     while(!dev_busy()){
-        send_command(0x71);
+        //send_command(0x71);
     }
 }
 

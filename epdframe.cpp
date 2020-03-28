@@ -52,7 +52,7 @@ uint8_t epdframe::init_screen(){
  * **/
 
 void epdframe::show(){
-    for(int i=0;i<4;i++){
+    for(int i=0;i<5;i++){
         this->epd42_scr.save_data(this->frame_buffer);
         this->epd42_scr.display_frame();
         this->epd42_scr.dev_idle();

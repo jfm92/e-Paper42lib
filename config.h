@@ -12,7 +12,7 @@
 #define MOSI_PIN    14
 #define MISO_PIN    12 //Useless on this library but necessary to init the SPI
 #define SCK_PIN     13
-#define SPI_CLK  8000000 //1Mhz
+#define SPI_CLK  8000000 //8Mhz
 
 /**
  * Screen configuration
@@ -21,6 +21,7 @@
 
 #define SCR_WIDTH   400
 #define SCR_HEIGHT  300
+#define SCR_DTM 2
 
 /**
  * Fonts selection.
